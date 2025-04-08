@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大師級網頁展示</title>
+    <style>
+        /* 全局樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* 導覽列樣式 */
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.9);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: 0.3s ease;
+            padding: 1rem 2rem;
+        }
+
+        .navbar.scrolled {
+            background-color: rgba(0, 0, 0, 0.95);
+            padding: 0.8rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .menu {
+            display: flex;
+            list-style: none;
+        }
+
+        .menu li {
+            margin: 0 15px;
+            position: relative;
+        }
+
+        .menu li a {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: 0.3s ease;
+        }
+
+        .menu li a:hover {
+            color: #64b5f6;
+        }
+
+        .menu li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: #64b5f6;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: 0.3s ease;
+        }
+
+        .menu li a:hover::after {
+            width: 100%;
+        }
+
+        /* 漢堡菜單 */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .bar {
+            width: 25px;
+            height: 3px;
+            background-color: #fff;
+            margin: 3px 0;
+            transition: 0.3s ease;
+        }
+
+        /* 主要內容區域 */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem 0;
+        }
+
+        /* 頁面標題 */
+        .page-title {
+            text-align: center;
+            padding: 3rem 1rem;
+            background-color: #64b5f6;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-title p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 圖片展示區域 */
+        .image-gallery {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .gallery-title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .gallery-item {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: white;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 250px;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            overflow: hidden;
+        }
+
+        .gallery-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover .gallery-image img {
+            transform: scale(1.1);
+        }
+
+        .gallery-caption {
+            padding: 1.2rem;
+        }
+
+        .gallery-caption h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .gallery-caption p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* 頁尾樣式 */
+        .footer {
+            background-color: #222;
+            color: #fff;
+            padding: 3rem 0;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .footer-section h3::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 50px;
+            height: 2px;
+            background-color: #64b5f6;
+        }
+
+        .footer-section p {
+            margin-bottom: 1rem;
+            color: #bbb;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 1.5rem;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #333;
+            color: #fff;
+            transition: 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: #64b5f6;
+            transform: translateY(-5px);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #bbb;
+            transition: 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: #64b5f6;
+            transform: translateX(5px);
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #bbb;
+        }
+
+        .contact-info i {
+            margin-right: 10px;
+            color: #64b5f6;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #444;
+            color: #bbb;
+            font-size: 0.9rem;
+            max-width: 1400px;
+            margin: 2rem auto 0;
+            padding: 1.5rem 2rem 0;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 992px) {
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .menu {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                flex-direction: column;
+                background-color: rgba(0, 0, 0, 0.95);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s ease;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                padding: 2rem 0;
+            }
+            
+            .menu.active {
+                left: 0;
+            }
+            
+            .menu li {
+                margin: 15px 0;
+            }
+            
+            .hamburger {
+                display: flex;
+            }
+            
+            .hamburger.active .bar:nth-child(1) {
+                transform: translateY(9px) rotate(45deg);
+            }
+            
+            .hamburger.active .bar:nth-child(2) {
+                opacity: 0;
+            }
+            
+            .hamburger.active .bar:nth-child(3) {
+                transform: translateY(-9px) rotate(-45deg);
+            }
+            
+            .page-title h1 {
+                font-size: 2rem;
+            }
+
+            .page-title p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-section {
+                text-align: center;
+            }
+            
+            .footer-section h3::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+            
+            .contact-info {
+                justify-content: center;
+            }
+        }
+
+        /* 回到頂部按鈕 */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #64b5f6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-to-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background-color: #1e88e5;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- 導覽列 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">大師級網頁</div>
+            <ul class="menu">
+                <li><a href="#" class="active">首頁</a></li>
+                <li><a href="#gallery">圖片集</a></li>
+                <li><a href="#about">關於我們</a></li>
+                <li><a href="#services">服務</a></li>
+                <li><a href="#contact">聯絡我們</a></li>
+            </ul>
+            <div class="hamburger">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要內容區域 -->
+    <main class="main-content">
+        <!-- 頁面標題 -->
+        <section class="page-title">
+            <h1>精彩圖片集</h1>
+            <p>探索我們精心挑選的高品質圖片作品，展現視覺的無限可能</p>
+        </section>
+
+        <!-- 圖片展示區域 -->
+        <section id="gallery" class="image-gallery">
+            <div class="gallery-title">
+                <h2>精選作品集</h2>
+            </div>
+            <div class="gallery-grid">
+                <!-- 圖片1 -->
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="image 1.jpg" alt="圖片1說明">
+                    </div>
+                    <div class="gallery-caption">
+                        <h3>圖片 1</h3>
+                        <p>這是第一張圖片的詳細描述，您可以在這裡添加關於圖片的重要信息。</p>
+                    </div>
+                </div>
+
+                <!-- 圖片2 -->
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="image 2.jpg" alt="圖片2說明">
+                    </div>
+                    <div class="gallery-caption">
+                        <h3>圖片 2</h3>
+                        <p>這是第二張圖片的詳細描述，您可以在這裡添加關於圖片的重要信息。</p>
+                    </div>
+                </div>
+
+                <!-- 圖片3 -->
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="image 3.jpg" alt="圖片3說明">
+                    </div>
+                    <div class="gallery-caption">
+                        <h3>圖片 3</h3>
+                        <p>這是第三張圖片的詳細描述，您可以在這裡添加關於圖片的重要信息。</p>
+                    </div>
+                </div>
+
+                <!-- 圖片4 -->
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="image 4.jpg" alt="圖片4說明">
+                    </div>
+                    <div class="gallery-caption">
+                        <h3>圖片 4</h3>
+                        <p>這是第四張圖片的詳細描述，您可以在這裡添加關於圖片的重要信息。</p>
+                    </div>
+                </div>
+
+                <!-- 圖片5 -->
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="image 5.jpg" alt="圖片5說明">
+                    </div>
+                    <div class="gallery-caption">
+                        <h3>圖片 5</h3>
+                        <p>這是第五張圖片的詳細描述，您可以在這裡添加關於圖片的重要信息。</p>
+                    </div>
+                </div>
+
+                <!-- 圖片6 -->
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="image 6.jpg" alt="圖片6說明">
+                    </div>
+                    <div class="gallery-caption">
+                        <h3>圖片 6</h3>
+                        <p>這是第六張圖片的詳細描述，您可以在這裡添加關於圖片的重要信息。</p>
+                    </div>
+                </div>
+
+                <!-- 圖片7 -->
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="image 7.jpg" alt="圖片7說明">
+                    </div>
+                    <div class="gallery-caption">
+                        <h3>圖片 7</h3>
+                        <p>這是第七張圖片的詳細描述，您可以在這裡添加關於圖片的重要信息。</p>
+                    </div>
+                </div>
+
+                <!-- 圖片8 -->
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="image 8.jpg" alt="圖片8說明">
+                    </div>
+                    <div class="gallery-caption">
+                        <h3>圖片 8</h3>
+                        <p>這是第八張圖片的詳細描述，您可以在這裡添加關於圖片的重要信息。</p>
+                    </div>
+                </div>
+
+                <!-- 圖片9 -->
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="image 9.jpg" alt="圖片9說明">
+                    </div>
+                    <div class="gallery-caption">
+                        <h3>圖片 9</h3>
+                        <p>這是第九張圖片的詳細描述，您可以在這裡添加關於圖片的重要信息。</p>
+                    </div>
+                </div>
+
+                <!-- 圖片10 -->
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="image 10.jpg" alt="圖片10說明">
+                    </div>
+                    <div class="gallery-caption">
+                        <h3>圖片 10</h3>
+                        <p>這是第十張圖片的詳細描述，您可以在這裡添加關於圖片的重要信息。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 頁尾區域 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>關於我們</h3>
+                <p>我們是一個專業的圖片收集和展示平台，致力於提供高品質的視覺體驗。</p>
+                <div class="social-links">
+                    <a href="#"><span>FB</span></a>
+                    <a href="#"><span>IG</span></a>
+                    <a href="#"><span>TW</span></a>
+                    <a href="#"><span>YT</span></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>快速連結</h3>
+                <ul class="footer-links">
+                    <li><a href="#">首頁</a></li>
+                    <li><a href="#gallery">圖片集</a></li>
+                    <li><a href="#about">關於我們</a></li>
+                    <li><a href="#services">服務</a></li>
+                    <li><a href="#contact">聯絡我們</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>聯絡資訊</h3>
+                <div class="contact-info">
+                    <span>地址：台北市信義區101大樓</span>
+                </div>
+                <div class="contact-info">
+                    <span>電話：+886 2 1234 5678</span>
+                </div>
+                <div class="contact-info">
+                    <span>電子郵件：info@example.com</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 大師級網頁. 版權所有。</p>
+        </div>
+    </footer>
+
+    <!-- 回到頂部按鈕 -->
+    <div class="back-to-top">↑</div>
+
+    <!-- JavaScript 代碼 -->
+    <script>
+        // 選擇DOM元素
+        const navbar = document.querySelector('.navbar');
+        const menuBtn = document.querySelector('.hamburger');
+        const menu = document.querySelector('.menu');
+        const backToTopBtn = document.querySelector('.back-to-top');
+
+        // 漢堡菜單切換
+        menuBtn.addEventListener('click', () => {
+            menuBtn.classList.toggle('active');
+            menu.classList.toggle('active');
+        });
+
+        // 點擊菜單項后關閉菜單（移動端）
+        document.querySelectorAll('.menu li a').forEach(item => {
+            item.addEventListener('click', () => {
+                menuBtn.classList.remove('active');
+                menu.classList.remove('active');
+            });
+        });
+
+        // 捲動效果
+        window.addEventListener('scroll', () => {
+            // 導覽列捲動效果
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+
+            // 回到頂部按鈕顯示/隱藏
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('active');
+            } else {
+                backToTopBtn.classList.remove('active');
+            }
+        });
+
+        // 回到頂部功能
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // 平滑捲動到錨點
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                if (this.getAttribute('href') === '#') return;
+                
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (!target) return;
+                
+                const navHeight = navbar.offsetHeight;
+                const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
+                
+                window.scrollTo({
+                    top: targetPosition - navHeight - 20,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // 頁面載入動畫
+        window.addEventListener('load', () => {
+            document.body.classList.add('loaded');
+        });
+
+        // 圖片延遲載入
+        const galleryImages = document.querySelectorAll('.gallery-image img');
+        
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.classList.add('fade-in');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            
+            galleryImages.forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+    </script>
+</body>
+</html>
